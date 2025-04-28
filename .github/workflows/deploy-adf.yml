@@ -52,7 +52,7 @@ jobs:
 
       - name: Stop ADF triggers
         shell: pwsh
-        run: ./.deployment/scripts/PrePostDeploymentScript.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} -preDeployment $true -armTemplate './adf_export/ARMTemplateForFactory.json'        
+        run: ./.deployment/scripts/PrePostDeploymentScript.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} -preDeployment $true -armTemplate './adf_export/ARMTemplateForFactory.json'
 
       - name: Wait for running jobs
         shell: pwsh
@@ -69,7 +69,7 @@ jobs:
 
       - name: Post deployment cleanup
         shell: pwsh
-        run: ./.deployment/scripts/PrePostDeploymentScript.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} -preDeployment $false
+        run: ./.deployment/scripts/PrePostDeploymentScript.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} -preDeployment $false -armTemplate './adf_export/ARMTemplateForFactory.json'
 
       - name: Restart Triggers
         shell: pwsh
