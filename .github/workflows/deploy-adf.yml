@@ -11,15 +11,14 @@ on:
         type: environment
 
 env: 
-  environment_name: ${{inputs.deploy_target || 'sbx' }}
   trigger_config: ./.deployment/config/${{inputs.deploy_target || 'sbx' }}/triggers.json
   deployment_params: .deployment/config/${{inputs.deploy_target || 'sbx' }}/parameters.json
 
 jobs:
   deploy-adf:
-    name: Deploy ADF to ${{ env.environment_name }}
+    name: Deploy ADF to ${{inputs.deploy_target || 'sbx' }}
     runs-on: ubuntu-latest
-    environment: ${{ env.environment_name  }}
+    environment: ${{inputs.deploy_target || 'sbx' }}
     permissions:
       contents: read
       id-token: write
