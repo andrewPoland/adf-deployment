@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_call:
+  workflow_dispatch:
     inputs:
       deploy_target:
         description: environment name
@@ -12,8 +12,8 @@ on:
 
 env: 
   environment_name: ${{inputs.deploy_target || 'sbx' }}
-  trigger_config: ./.deployment/config/${{ env.environment_name }}/triggers.json
-  deployment_params: .deployment/config/${{ env.environment_name }}/parameters.json
+  trigger_config: ./.deployment/config/${{inputs.deploy_target || 'sbx' }}/triggers.json
+  deployment_params: .deployment/config/${{inputs.deploy_target || 'sbx' }}/parameters.json
 
 jobs:
   deploy-adf:
