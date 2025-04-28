@@ -1,3 +1,5 @@
+name: Deploy ADF
+
 run-name: Deploy ADF to ${{ inputs.deploy_target || 'sbx' }}
 
 on: 
