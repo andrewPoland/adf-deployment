@@ -35,9 +35,20 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Export ARM Template
+        run: |
+          exportFolder="./adf_export"
+
+          echo "Exporting ADF ARM template from sandbox"
+          az datafactory export-arm-template \
+              --resource-group  ${{ vars.sbx_resource_group }} \
+              --factory-name ${{ vars.sbx_data_factory }}  \
+              --output-folder $exportFolder
+
+
       - name: Stop ADF triggers
         shell: pwsh
-        run: ./.deployment/scripts/PrePostDeploymentScript.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} -preDeployment $true        
+        run: ./.deployment/scripts/PrePostDeploymentScript.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} -preDeployment $true -armTemplate './adf_export/ARMTemplateForFactory.json'        
 
       - name: Wait for running jobs
         shell: pwsh
@@ -46,13 +57,7 @@ jobs:
       - name: Deploy ADF
         run: |           
           exportFolder="./adf_export"
-
-          echo "Exporting ADF ARM template from sandbox"
-          az datafactory export-arm-template \
-              --resource-group  ${{ vars.sbx_resource_group }} \
-              --factory-name ${{ vars.sbx_data_factory }}  \
-              --output-folder ./ArmTemplate
-
+          
           az deployment group create \
             --resource-group ${{ vars.resource_group }} \
             --template-file "$exportFolder/ARMTemplateForFactory.json" \
