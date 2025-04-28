@@ -1,0 +1,69 @@
+run-name: Deploy ADF to ${{ inputs.deploy_target || 'sbx' }}
+
+on: 
+  push:
+    branches:
+      - main
+  workflow_call:
+    inputs:
+      deploy_target:
+        description: environment name
+        required: false
+        default: 'sbx'
+        type: environment
+
+variables: 
+  environment_name: ${{inputs.deploy_target || 'sbx' }}
+  trigger_config: ./.deployment/config/${{ vars.environment_name }}/triggers.json
+  deployment_params: .deployment/config/${{ vars.environment_name }}/parameters.json
+
+jobs:
+  deploy-adf:
+    name: Deploy ADF to ${{ vars.environment_name }}
+    runs-on: ubuntu-latest
+    environment: ${{ vars.environment_name  }}
+    permissions:
+      content: read
+      id-token: write
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login@
+        with: 
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Stop ADF triggers
+        shell: pwsh
+        run: ./.deployment/scripts/PrePostDeploymentScript.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} -preDeployment $true        
+
+      - name: Wait for running jobs
+        shell: pwsh
+        run: ./.deployment/scripts/WaitForRunningPipelinesToComplete.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} 
+
+      - name: Deploy ADF
+        run: |           
+          exportFolder="./adf_export"
+
+          echo "Exporting ADF ARM template from sandbox"
+          az datafactory export-arm-template \
+              --resource-group  ${{ vars.sbx_resource_group }} \
+              --factory-name ${{ vars.sbx_data_factory }}  \
+              --output-folder ./ArmTemplate
+
+          az deployment group create \
+            --resource-group ${{ vars.resource_group }} \
+            --template-file "$exportFolder/ARMTemplateForFactory.json" \
+            --parameters @"${{ vars.deployment_params }}"
+
+      - name: Post deployment cleanup
+        shell: pwsh
+        run: ./.deployment/scripts/PrePostDeploymentScript.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} -preDeployment $false
+
+      - name: Restart Triggers
+        shell: pwsh
+        run: ./.deployment/scripts/ResetTriggers.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} -TriggerConfig ${{ vars.trigger_config}}
+
+
+
