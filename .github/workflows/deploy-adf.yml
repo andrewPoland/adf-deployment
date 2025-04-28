@@ -8,22 +8,20 @@ on:
     inputs:
       deploy_target:
         description: environment name
-        required: false
-        default: 'sbx'
         type: environment
 
-variables: 
+env: 
   environment_name: ${{inputs.deploy_target || 'sbx' }}
-  trigger_config: ./.deployment/config/${{ vars.environment_name }}/triggers.json
-  deployment_params: .deployment/config/${{ vars.environment_name }}/parameters.json
+  trigger_config: ./.deployment/config/${{ env.environment_name }}/triggers.json
+  deployment_params: .deployment/config/${{ env.environment_name }}/parameters.json
 
 jobs:
   deploy-adf:
-    name: Deploy ADF to ${{ vars.environment_name }}
+    name: Deploy ADF to ${{ env.environment_name }}
     runs-on: ubuntu-latest
-    environment: ${{ vars.environment_name  }}
+    environment: ${{ env.environment_name  }}
     permissions:
-      content: read
+      contents: read
       id-token: write
 
     steps:
@@ -55,7 +53,7 @@ jobs:
           az deployment group create \
             --resource-group ${{ vars.resource_group }} \
             --template-file "$exportFolder/ARMTemplateForFactory.json" \
-            --parameters @"${{ vars.deployment_params }}"
+            --parameters @"${{ env.deployment_params }}"
 
       - name: Post deployment cleanup
         shell: pwsh
@@ -63,7 +61,7 @@ jobs:
 
       - name: Restart Triggers
         shell: pwsh
-        run: ./.deployment/scripts/ResetTriggers.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} -TriggerConfig ${{ vars.trigger_config}}
+        run: ./.deployment/scripts/ResetTriggers.ps1 -ResourceGroupName ${{ vars.resource_group }} -DataFactoryName ${{ vars.data_factory }} -TriggerConfig ${{ env.trigger_config}}
 
 
 
