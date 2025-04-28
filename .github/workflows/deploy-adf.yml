@@ -37,7 +37,12 @@ jobs:
       
       - name: Install Node Modules
         run: |
-          npm ci
+          npm 
+          
+      - name: Install Powershell Modules
+        shell: pwsh
+        run: |
+          Install-Module -Name Az.DataFactory -f      
 
       - name: Export ARM Template
         run: |
