@@ -1,5 +1,5 @@
 param(
-    [string]$ResourceGroup,
+    [string]$ResourceGroupName,
     [string]$DataFactoryName,
     [string]$TriggerConfig
 )
@@ -10,8 +10,8 @@ $triggers = Get-Content $TriggerConfig | ConvertFrom-Json
 foreach ($trigger in $triggers.enabled) {
     Write-Host "Enabling trigger: $trigger"
     az datafactory trigger start `
-        --resource-group $resourceGroup `
-        --factory-name $dataFactoryName `
+        --resource-group $ResourceGroupName `
+        --factory-name $DataFactoryName `
         --name $trigger
 }
     
@@ -19,8 +19,8 @@ foreach ($trigger in $triggers.enabled) {
 foreach ($trigger in $triggers.disabled) {
     Write-Host "Disabling trigger: $trigger"
     az datafactory trigger stop `
-        --resource-group $resourceGroup `
-        --factory-name $dataFactoryName `
+        --resource-group $ResourceGroupName `
+        --factory-name $DataFactoryName `
         --name $trigger
 }    
     
