@@ -1,2 +1,2 @@
 # adf-deployment
-Azure Devops template for CI/CD using yaml pipelines.
+Github Workflow template for CI/CD ensuring correct cleanup & management of triggers during deployment.
