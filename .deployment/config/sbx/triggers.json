@@ -1,6 +1,8 @@
 {
     "enabled": [
+        "sample-trigger-on"
     ],
     "disabled": [
+        "sample-trigger-off"
     ]  
 }
