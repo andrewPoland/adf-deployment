@@ -34,11 +34,15 @@ jobs:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: Install Node Modules
+        run: |
+          npm ci
 
       - name: Export ARM Template
         run: |
           echo "Exporting ADF ARM template from sandbox"
-          npx azure-data-factory-utilities start export ./src/adf ${{ vars.sbx_data_factory }} adf_export
+          npm run start export ./src/adf ${{ vars.sbx_data_factory }} adf_export
 
       - name: Stop ADF triggers
         shell: pwsh
