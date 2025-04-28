@@ -1,0 +1,33 @@
+{
+	"name": "sample-trigger-off",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "SamplePipeline",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2025-04-28T03:52:00",
+				"endTime": "2025-04-30T03:52:00",
+				"timeZone": "New Zealand Standard Time",
+				"schedule": {
+					"minutes": [
+						8
+					],
+					"hours": [
+						16
+					]
+				}
+			}
+		}
+	}
+}
