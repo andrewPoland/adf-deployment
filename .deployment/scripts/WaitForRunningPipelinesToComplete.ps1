@@ -1,5 +1,5 @@
 param(
-    [string]$ResourceGroup,
+    [string]$ResourceGroupName,
     [string]$DataFactoryName,
     [int]$PollIntervalSeconds = 30
 )
@@ -11,7 +11,7 @@ do {
     $currentTime = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 
     $runningPipelines = az datafactory pipeline-run query-by-factory `
-        --resource-group $ResourceGroup `
+        --resource-group $ResourceGroupName `
         --factory-name $DataFactoryName `
         --last-updated-after $startTime `
         --last-updated-before $currentTime `
