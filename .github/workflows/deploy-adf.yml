@@ -37,14 +37,8 @@ jobs:
 
       - name: Export ARM Template
         run: |
-          exportFolder="./adf_export"
-
           echo "Exporting ADF ARM template from sandbox"
-          az datafactory export-arm-template \
-              --resource-group  ${{ vars.sbx_resource_group }} \
-              --factory-name ${{ vars.sbx_data_factory }}  \
-              --output-folder $exportFolder
-
+          npx azure-data-factory-utilities start export ./src/adf ${{ vars.sbx_data_factory }} adf_export
 
       - name: Stop ADF triggers
         shell: pwsh
@@ -57,7 +51,7 @@ jobs:
       - name: Deploy ADF
         run: |           
           exportFolder="./adf_export"
-          
+
           az deployment group create \
             --resource-group ${{ vars.resource_group }} \
             --template-file "$exportFolder/ARMTemplateForFactory.json" \
